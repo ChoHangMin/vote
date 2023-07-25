@@ -1,0 +1,75 @@
+{
+    "discription" : "data of lck teams",
+    "data" : {
+        "T1" : {
+            "top" : "Zeus",
+            "jug" : "Oner",
+            "mid" : "Faker",
+            "bot" : "Gumayusi",
+            "spt" : "Keria"
+        },
+        "Gen.G" : {
+            "top" : "Doran",
+            "jug" : "Peanut",
+            "mid" : "Chovy",
+            "bot" : "Peyz",
+            "spt" : "Delight"
+        },
+        "Kt Rolster" : {
+            "top" : "Kiin", 
+            "jug" : "Cuzz",
+            "mid" : "Bdd",
+            "bot" : "Aiming",
+            "spt" : "Lehends"
+        },
+        "Hanwha Life Esports" : {
+            "top" : "Kingen", 
+            "jug" : "Grizzly",
+            "mid" : "Zeka",
+            "bot" : "Viper",
+            "spt" : "Life"
+        },
+        "Dplus KIA" : {
+            "top" : "Canna",
+            "jug" : "Canyon",
+            "mid" : "Showmaker",
+            "bot" : "Deft",
+            "spt" : "Bible"
+        },
+        "Liiv SANDBOX" : {
+            "top" : "Burdol", 
+            "jug" : "Willer",
+            "mid" : "Clozer",
+            "bot" : "Teddy",
+            "spt" : "Kael"
+        },
+        "KWANGDONG FREECS" : {
+            "top" : "DuDu", 
+            "jug" : "YoungJae",
+            "mid" : "BuLLDog",
+            "bot" : "Teayoon",
+            "spt" : "Jun"
+        },
+        "OKSavingsBank BRION" : {
+            "top" : "Morgan", 
+            "jug" : "UmTi",
+            "mid" : "Karis",
+            "bot" : "Hena",
+            "spt" : "Effort"
+        },
+        "DRX" : {
+            "top" : "Rascal", 
+            "jug" : "Juhan",
+            "mid" : "FATE",
+            "bot" : "Paduck",
+            "spt" : "BeryL"
+        },
+        "Nongshim Redforce" : {
+            "top" : "DnDn", 
+            "jug" : "Sylvie",
+            "mid" : "FIESTA",
+            "bot" : "Jiwoo",
+            "spt" : "Peter"
+        }
+    }
+}
