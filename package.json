@@ -1,6 +1,6 @@
 {
   "name": "vote-lck",
-  "version": "0.1.0",
+  "version": "0.1.0", // test 3
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
