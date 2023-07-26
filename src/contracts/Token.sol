@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.8.18 <0.9.0;
 // Token.sol
 contract Token {
     uint256 public totalSupply = 1000000 * (10 ** 18);
@@ -20,8 +20,9 @@ contract Token {
     mapping(address => User) userData;          // get access to 'struct User' by address(ex. msg.sender)
     mapping(address => bool) registeredUsers;   // To check the msg.sender has registered in this DApp(default : false)
 
+    uint public INVALID_INDEX = 100;
 
-    constructor() public {
+    constructor()  {
         owner = msg.sender;
     }    
 
@@ -37,6 +38,7 @@ contract Token {
         return userData[_address].teamIndex;
     }
 
+
     function logIn() public {
         // Ensure the user doesn't exist already
         // require the total Supply is enough to send to users
@@ -48,20 +50,14 @@ contract Token {
         userData[msg.sender] = User({
             balance: 10 * (10 ** 18),
             firstEnter: true,
-            voted: true,
-            teamIndex: uint(-1),
+            voted: false,
+            teamIndex: INVALID_INDEX,
             voteBalance: 0
         });
         totalSupply -= 10 * (10 ** 18);
     }
-    
-    function giveRightToVote(address _address) public returns(bool) {
-        require(msg.sender == owner, 'Only owner can give acceess');
-        // set the user to vote
-        userData[_address].voted = false;
-        return true;
-    }
 
+    // 없어도 됨
     function showOwner() public view returns(address) {     // for check the address of owner(just for experience)
         return owner;
     }

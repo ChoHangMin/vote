@@ -12,7 +12,7 @@ module.exports = {
   tests_directory: './test/',
   compilers: {
     solc: {
-      version: '^0.5.1',
+      version: '^0.8.18',
       optimizer: {
         enabled: true,
         runs: 200

@@ -1,3 +1,4 @@
+// Main.js
 import React, {Component} from 'react'
 
 class Main extends Component {
@@ -24,9 +25,38 @@ class Main extends Component {
                     </form>
                 </div>
                     <button type='login' className='btn btn-primary btn-lg btn-block' onClick={this.props.LogIn}>LOG IN</button>
-                <p>teams : {this.props.teams}</p>
+                <div className="row">
+                    <div className="col">
+                        {this.props.team1 && this.props.team1.length > 0 ? (
+                        <p>
+                            <ul>
+                                <li>teamname: {this.props.team1[0]}</li>
+                                <li>top: {this.props.team1[1]}</li>
+                                <li>jug: {this.props.team1[2]}</li>
+                                <li>mid: {this.props.team1[3]}</li>
+                                <li>adc: {this.props.team1[4]}</li>
+                                <li>sup: {this.props.team1[5]}</li>
+                            </ul>
+                        </p>
+                        ) : null}
+                    </div>
+                    <div className="col">
+                        {this.props.team2 && this.props.team2.length > 0 ? (
+                        <p>
+                            <ul>
+                            <li>teamname: {this.props.team2[0]}</li>
+                            <li>top: {this.props.team2[1]}</li>
+                            <li>jug: {this.props.team2[2]}</li>
+                            <li>mid: {this.props.team2[3]}</li>
+                            <li>adc: {this.props.team2[4]}</li>
+                            <li>sup: {this.props.team2[5]}</li>
+                            </ul>
+                        </p>
+                        ) : null}
+                    </div>
+                </div>
             </div>
         )
     }
-}
+}   
 export default Main;

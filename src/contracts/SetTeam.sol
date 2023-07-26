@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.8.18 <0.9.0;
 import './Token.sol';
 
 // SetTeam.sol
@@ -18,13 +18,20 @@ contract SetTeam is Token {
         string sup;
     }
     Team[] public teams;
-    mapping(uint => uint) public teamWeight;    // TeamIndex -> teamWeight
+    mapping(uint => uint) public teamWeight;    // Team Index -> team Weight
+    // Team Name -> Team index(setTeam 설정할 때 default가 0이어서 하나씩 밀려서 표기하도록 함)
+    // ex. ['T1', 'Gen.G', 'KT'..]있을 때 원래 0, 1, 2가 index이지만 
+    // mapping teamIndex는 1, 2, 3을 return함. 다른 함수에서 사용될 때 -1을 해야 정상적인 팀이 표기됨됨
+    mapping(string => uint) public teamIndex;   
+    
+
 
     // the team index which have won   -> updated by Vote.sol function gameEnd()
     // default : invalid index
-    uint winnerTeamIndex = uint(-1);
+    uint winnerTeamIndex = INVALID_INDEX;
     // weigth of the winner. for calculation of ratio("before" Vote.sol function gameEnd()) 
-    uint winnerTeamTotalBalance = 0;      
+    uint bettingTotalBalance = 0;   
+    uint winnerTeamPureBalance = 0;   
 
     // modifier which can allow only owner to do something
     modifier onlyOwner() {
@@ -32,39 +39,47 @@ contract SetTeam is Token {
         _;
     }
 
-    // add team
-    function setTeam(string memory _teamName, string memory _top, string memory _jug, string memory _mid, string memory _adc, string memory _sup) public onlyOwner {
-        //ex. _team = ['T1', 'Zeus', 'Oner', 'Faker', 'Gumayusi', 'Keria']
-        // check the team name if it is already in here
-        require(getTeamIndexByTeamName(_teamName) != uint(-1));
-        teams.push(Team({
+    constructor() {
+        teamIndex[""] = INVALID_INDEX;
+    }
+
+    function setTeam(string memory _teamName, string memory _top, string memory _jug, string memory _mid, string memory _adc, string memory _sup) external onlyOwner {
+        // Check if the team name is not empty
+        require(bytes(_teamName).length > 0, "Team name cannot be empty");
+
+        // Check if the team name is unique (not already added)
+        require(teamIndex[_teamName] == 0, "Team name already exists");
+
+        // Create a new Team struct and add it to the teams array
+        Team memory newTeam = Team({
             teamName: _teamName,
             top: _top,
             jug: _jug,
             mid: _mid,
             adc: _adc,
             sup: _sup
-        }));
-        teamWeight[getTeamIndexByTeamName(_teamName)] = 0;
+        });
+
+        uint _teamIndex = teams.length;
+        teams.push(newTeam);    
+
+        // Update the team index mapping with the new team index
+        teamIndex[_teamName] = _teamIndex;
+        // Set the team weight to 0 initially
+        teamWeight[_teamIndex] = 0;
     }
 
     // for Vote.sol, get the index of the team
     function getTeamIndexByTeamName(string memory _teamName) internal view returns (uint) {
-        for (uint i = 0; i < teams.length; i++) {
-            if (keccak256(bytes(teams[i].teamName)) == keccak256(bytes(_teamName))) {
-                return i;
-            }
-        }
-        // If the team name is not found, return an invalid index value (-1)
-        return uint(-1);
+        return teamIndex[_teamName];
     }
 
     // for React, to get the data of the team
     function getTeamDataByTeamName(string calldata  _teamName) external view returns (string memory, string memory, string memory, string memory, string memory, string memory) {
-        uint teamIndex = getTeamIndexByTeamName(_teamName);
-        require(teamIndex != uint(-1), "Wrong name"); // check name
+        uint _teamIndex = getTeamIndexByTeamName(_teamName);
+        require(_teamIndex != INVALID_INDEX, "Invalid team name"); // check name
 
-        Team memory team = teams[teamIndex];
+        Team memory team = teams[_teamIndex];
         return (team.teamName, team.top, team.jug, team.mid, team.adc, team.sup);
     }
 
