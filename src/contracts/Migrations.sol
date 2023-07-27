@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.18 <0.9.0;
-
+// migration 작업을 위해서 필요한 contract. truffle이기에 필요한 코드이다
 contract Migrations {
   address public owner;
   uint256 public last_completed_migration;
