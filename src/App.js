@@ -1,3 +1,5 @@
+// App.js
+
 import './App.css'
 import React, { Component } from 'react'
 import Web3 from 'web3'
@@ -95,20 +97,22 @@ class App extends Component {
   // function SetTeam.sol -> function setTeam
   // (string memory _teamName, string memory _top, string memory _jug, string memory _mid, string memory _adc, string memory _sup) 
   // public onlyOwner
-  handleSetTeam_ = async(teamName, top, jug, mid, adc, sup) => {
-    const {setTeam, account} = this.state;
+  handleSetTeam_ = async (teamName, top, jug, mid, adc, sup) => {
+    const { setTeam, account } = this.state;
     try {
       await setTeam.methods.setTeam(teamName, top, jug, mid, adc, sup).send({ from: account });
-      let team1Index = await setTeam.methods.getTeam(teamName).call();
-
+  
+      // Get team index by calling the getTeamIndexByTeamName function
+      let team1Index = await setTeam.methods.getTeamIndexByTeamName(teamName).call();
+  
       // Get team data from teams array using the retrieved index
       let teamData = this.state.teams[team1Index];
-
+  
       // Create a new team object with the updated weight and other data
       let updatedTeam = { ...teamData, top, jug, mid, adc, sup };
       let updatedTeams = [...this.state.teams];
       updatedTeams[team1Index] = updatedTeam;
-
+  
       this.setState({ teams: updatedTeams });
       console.log(teamName);
       console.log(top);
@@ -117,25 +121,40 @@ class App extends Component {
       console.log(adc);
       console.log(sup);
       window.alert('저장되었습니다.');
-    } catch(error) {
-      window.alert("Only owner can use this. check the owner address")
+    } catch (error) {
+      window.alert('Only owner can use this. Check the owner address');
     }
-  }
+  };
+
   vsTeam_ = async (team1, team2) => {
     const { setTeam } = this.state;
     try {
-      let team1Index = await setTeam.methods.getTeam(team1).call();
-      let team2Index = await setTeam.methods.getTeam(team2).call();
-  
-      // Get team data from teams array using the retrieved indices
-      let team1Data = this.state.teams[team1Index];
-      let team2Data = this.state.teams[team2Index];
-  
-      this.setState({ team1: team1Data, team2: team2Data });
+      let team1Data = await setTeam.methods.getTeamDataByTeamName(team1).call()
+      let team2Data = await setTeam.methods.getTeamDataByTeamName(team2).call()
+      
+      // update team1, 2 data to constructor(props)
+      this.setState({
+        team1: {
+          teamName: team1Data[0],
+          top: team1Data[1],
+          jug: team1Data[2],
+          mid: team1Data[3],
+          adc: team1Data[4],
+          sup: team1Data[5]
+        },
+        team2: {
+          teamName: team2Data[0],
+          top: team2Data[1],
+          jug: team2Data[2],
+          mid: team2Data[3],
+          adc: team2Data[4],
+          sup: team2Data[5]
+        }
+      })
     } catch (error) {
       window.alert(`${team1} 또는 ${team2}가 블록체인에 존재하지 않습니다!`);
     }
-  };
+  }
 
   constructor(props) {
     super(props)
@@ -146,7 +165,6 @@ class App extends Component {
       setTeam: {},      // contract of the SetTeam.sol
       token: {},        // contract of the Token.sol
       tokenBalance: '0',// token Balance
-      teams: [],        // initialize teams array
       team1: {},        // Data of the team #1
       team2: {}         // Data of the team #2
     }
@@ -169,7 +187,6 @@ class App extends Component {
                   path='/' 
                   element={<Main tokenBalance={this.state.tokenBalance} 
                                 LogIn={this.LogIn_}
-                                teams={this.state.teams}
                                 team1={this.state.team1}
                                 team2={this.state.team2}/>} />
 
