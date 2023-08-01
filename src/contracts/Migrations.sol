@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.18 <0.9.0;
+pragma solidity >=0.4.22 <0.9.0;
 // migration 작업을 위해서 필요한 contract. truffle이기에 필요한 코드이다
 contract Migrations {
   address public owner;
@@ -9,7 +9,7 @@ contract Migrations {
     if (msg.sender == owner) _;
   }
 
-  constructor() {
+  constructor () public {
     owner = msg.sender;
   }
 

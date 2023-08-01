@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.18 <0.9.0;
+pragma solidity >=0.4.22 <0.9.0;
 import './Token.sol';
 
 // SetTeam.sol
@@ -19,7 +19,7 @@ contract SetTeam is Token {
     }
     Team[] public teams;
     mapping(uint => uint) public teamWeight;    // Team Index -> team Weight
-    mapping(string => uint) public teamIndex;   
+    mapping(bytes32 => uint) public teamIndex;   
     
     // 이긴 팀의 index가 설정되는 변수. Vote.sol의 gameEnd()가 실행되면 값이 설정된다.
     // default : invalid index
@@ -36,16 +36,29 @@ contract SetTeam is Token {
         _;
     }
 
-    constructor() {
+    constructor () public {
         teamIndex[""] = INVALID_INDEX;
     }
 
-    function setTeam(string memory _teamName, string memory _top, string memory _jug, string memory _mid, string memory _adc, string memory _sup) external onlyOwner {
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
+
+    function setTeam(string calldata _teamName, string calldata _top, string calldata _jug, string calldata _mid, string calldata _adc, string calldata _sup) external onlyOwner {
         // 팀 이름이 적혀있어야 실행
         require(bytes(_teamName).length > 0, "Team name cannot be empty");
 
+        bytes32 teamNameHash = stringToBytes32(_teamName);
+
         // 이미 teamName이 입력되었는지 확인
-        require(teamIndex[_teamName] == 0, "Team name already exists");
+        require(teamIndex[teamNameHash] == 0, "Team name already exists");
 
         // 입력받은 값들을 Team 구조체에 넣음
         Team memory newTeam = Team({
@@ -62,18 +75,56 @@ contract SetTeam is Token {
         teams.push(newTeam);    
 
         // teamIndex를 mapping에 의해 찾을 수 있도록 값 설정
-        teamIndex[_teamName] = _teamIndex;
+        teamIndex[teamNameHash] = _teamIndex;
         // team에 배팅된 금액은 0으로 설정
         // ! 궁금점 : mapping 기본값은 0으로 되어있는데, 따로 여기서 0이라고 명시할 필요가 있을까?
         teamWeight[_teamIndex] = 0;
     }
+    // function setTeam(string calldata _teamName, string calldata _top, string calldata _jug, string calldata _mid, string calldata _adc, string calldata _sup) external onlyOwner {
+    //     // 팀 이름이 적혀있어야 실행
+    //     require(bytes(_teamName).length > 0, "Team name cannot be empty");
+
+    //     // 이미 teamName이 입력되었는지 확인
+    //     require(teamIndex[_teamName] == 0, "Team name already exists");
+
+    //     // 입력받은 값들을 Team 구조체에 넣음
+    //     Team memory newTeam = Team({
+    //         teamName: _teamName,
+    //         top: _top,
+    //         jug: _jug,
+    //         mid: _mid,
+    //         adc: _adc,
+    //         sup: _sup
+    //     });
+    //     // teamIndex를 설정
+    //     uint _teamIndex = teams.length;
+    //     // 구조체를 배열에 넣음(나중에 팀 정보를 index에 의해 빼내오기 위해서)
+    //     teams.push(newTeam);    
+
+    //     // teamIndex를 mapping에 의해 찾을 수 있도록 값 설정
+    //     teamIndex[_teamName] = _teamIndex;
+    //     // team에 배팅된 금액은 0으로 설정
+    //     // ! 궁금점 : mapping 기본값은 0으로 되어있는데, 따로 여기서 0이라고 명시할 필요가 있을까?
+    //     teamWeight[_teamIndex] = 0;
+    // }
 
     // Vote.sol에서 사용할 수 있도록, 팀 이름을 받아서 index를 알려줌
+    // function getTeamIndexByTeamName(string memory _teamName) internal view returns (uint) {
+    //     return teamIndex[_teamName];
+    // }
+
     function getTeamIndexByTeamName(string memory _teamName) internal view returns (uint) {
-        return teamIndex[_teamName];
+        return teamIndex[stringToBytes32(_teamName)];
     }
 
     // React에서 팀의 데이터(팀이름, 선수명 등)를 꺼내오기 위해서 설정
+    // function getTeamDataByTeamName(string calldata  _teamName) external view returns (string memory, string memory, string memory, string memory, string memory, string memory) {
+    //     uint _teamIndex = getTeamIndexByTeamName(_teamName);
+    //     require(_teamIndex != INVALID_INDEX, "Invalid team name"); // check name
+
+    //     Team memory team = teams[_teamIndex];
+    //     return (team.teamName, team.top, team.jug, team.mid, team.adc, team.sup);
+    // }
     function getTeamDataByTeamName(string calldata  _teamName) external view returns (string memory, string memory, string memory, string memory, string memory, string memory) {
         uint _teamIndex = getTeamIndexByTeamName(_teamName);
         require(_teamIndex != INVALID_INDEX, "Invalid team name"); // check name
@@ -83,6 +134,10 @@ contract SetTeam is Token {
     }
 
     // Vote.sol에서 사용. 팀에 베팅된 금액을 구하기 위해서 만듬
+    // function getTeamWeightByTeamName(string calldata _teamName) external view returns (uint) {
+    //     return teamWeight[getTeamIndexByTeamName(_teamName)];
+    // }
+
     function getTeamWeightByTeamName(string calldata _teamName) external view returns (uint) {
         return teamWeight[getTeamIndexByTeamName(_teamName)];
     }

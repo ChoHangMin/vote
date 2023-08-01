@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.18 <0.9.0;
+pragma solidity >=0.4.22 <0.9.0;
 // Token.sol
 // 주석에서 설명하는 토큰, 돈은 모두 같은 개념
 // 실제 배포용이 아닌 testnet에서 하는 것이기 때문에 가스비 제외하고는 실제 Eth를 사용하는 과정은 없음
@@ -23,7 +23,7 @@ contract Token {
 
     uint public INVALID_INDEX = 100;            // SetTeam.sol, Token.sol에서 올바르지 않은 값은 모두 이거로 설정했음
 
-    constructor()  {                            // owner 값 저장해둠
+    constructor () public {                            // owner 값 저장해둠
         owner = msg.sender;
     }    
 
